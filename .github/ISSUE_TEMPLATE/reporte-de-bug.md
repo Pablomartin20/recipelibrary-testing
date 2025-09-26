@@ -41,3 +41,5 @@ assignees: Pablomartin20
 ### Evidencias
 
 <!-- Screenshots o videos -->
+
+### Prioridad y severidad propuestas
