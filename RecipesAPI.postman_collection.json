@@ -1,0 +1,4945 @@
+{
+	"info": {
+		"_postman_id": "11bb63d8-22da-4f21-8d68-f7c627d5b11a",
+		"name": "Recipes API",
+		"description": "StartFragment\n\n```\nA solution to keep your recipes organized :)\n\n ```\n\nEndFragment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45716937",
+		"_collection_link": "https://pablooliva-6112215.postman.co/workspace/Pablo's-Workspace~bc760dac-44ea-43e5-86ba-930d5964b976/collection/45716937-11bb63d8-22da-4f21-8d68-f7c627d5b11a?action=share&source=collection_link&creator=45716937"
+	},
+	"item": [
+		{
+			"name": "Happy path",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Sign up",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Seteo la token para despues hacer log out\r",
+											"const jsonData = pm.response.json();\r",
+											"pm.environment.set(\"token\", jsonData.user_info.token);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Postman\",\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\",\r\n    \"password_confirmation\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sign-up",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log out",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// \"Vacío\" la variable token\r",
+											"pm.environment.set(\"token\", \"\");"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/logout",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log in",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Vuelvo a setear esta nueva token para las próximas solicitudes\r",
+											"const jsonData = pm.response.json();\r",
+											"pm.environment.set(\"token\", jsonData.user_info.token);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log in - Admin user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Seteo la token de admin para usarla en los tests\r",
+											"const jsonData = pm.response.json();\r",
+											"pm.environment.set(\"adminToken\", jsonData.user_info.token);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{adminEmail}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "noauth"
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"const method = pm.request.method;\r",
+									"\r",
+									"// Testeo propiedades de la respuesta en log in y sign up\r",
+									"if(method === \"POST\"){\r",
+									"    const jsonData = pm.response.json();\r",
+									"    const Ajv = require(\"ajv\");\r",
+									"    const ajv = new Ajv();\r",
+									"\r",
+									"    const schema = {\r",
+									"        type: \"object\",\r",
+									"        properties: {\r",
+									"            message: { type: \"string\" },\r",
+									"            user_info: { \r",
+									"                type: \"object\",\r",
+									"                properties: {\r",
+									"                    name: { type: \"string\" },\r",
+									"                    email: { type: \"string\" },\r",
+									"                    token: { type: \"string\" }\r",
+									"                },\r",
+									"                required: [\"name\", \"email\", \"token\"],\r",
+									"                additionalProperties: false\r",
+									"            },\r",
+									"        },\r",
+									"        required: [\"message\", \"user_info\"],\r",
+									"        additionalProperties: false\r",
+									"    };\r",
+									"\r",
+									"    const valid = ajv.validate(schema, jsonData);\r",
+									"\r",
+									"    pm.test(\"Schema is valid\", function () {\r",
+									"        pm.expect(valid).to.be.true;\r",
+									"    });\r",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Ingredients",
+					"item": [
+						{
+							"name": "All ingredients",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        ingredients: { type: \"array\", items: {\r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                name: { type: \"string\" },\r",
+											"                ingredient_type_id: { type: \"number\" }\r",
+											"            },\r",
+											"            required: [\"id\",  \"name\", \"ingredient_type_id\"],\r",
+											"            additionalProperties: false\r",
+											"        } }\r",
+											"    },\r",
+											"    required: [\"ingredients\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/ingredients",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"ingredients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Ingredient 7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        ingredient: {\r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                name: { type: \"string\" },\r",
+											"                ingredient_type: {\r",
+											"                    type: \"object\",\r",
+											"                    properties: {\r",
+											"                        id: { type: \"number\" },\r",
+											"                        name: { type: \"string\" }\r",
+											"                    },\r",
+											"                    required: [\"id\", \"name\"],\r",
+											"                    additionalProperties: false\r",
+											"                },\r",
+											"                recipes: { type: \"array\", items: {\r",
+											"                    properties: {\r",
+											"                        id: { type: \"number\" },\r",
+											"                        title: { type: \"string\" },\r",
+											"                        description: { type: \"string\" },\r",
+											"                        user_id: { type: \"number\" },\r",
+											"                        created_at: { type: \"string\", format: \"date-time\" },\r",
+											"                        updated_at: { type: \"string\", format: \"date-time\" }\r",
+											"                    },\r",
+											"                    required: [\"id\", \"title\", \"description\", \"user_id\", \"created_at\", \"updated_at\"],\r",
+											"                    additionalProperties: false\r",
+											"                } }\r",
+											"            },\r",
+											"            required: [\"id\", \"name\", \"ingredient_type\", \"recipes\"],\r",
+											"            additionalProperties: false\r",
+											"        }\r",
+											"    },\r",
+											"    required: [\"ingredient\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/ingredients/7",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"ingredients",
+										"7"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Recipes",
+					"item": [
+						{
+							"name": "Getting all recipes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        recipes: { type: \"array\", items: { \r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                title: { type: \"string\" },\r",
+											"                description: { type: \"string\" },\r",
+											"                user_id: { type: \"number\" },\r",
+											"                created_at: { type: \"string\", format: \"date-time\" },\r",
+											"                updated_at: { type: \"string\", format: \"date-time\" }\r",
+											"            },\r",
+											"            required: [\"id\", \"title\", \"description\", \"user_id\", \"created_at\", \"updated_at\"],\r",
+											"            additionalProperties: false\r",
+											"        } }\r",
+											"    },\r",
+											"    required: [\"recipes\"],\r",
+											"    additionalProperties: false\r",
+											"}\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting all recipes with parameters",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        recipes: { type: \"array\", items: { \r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                title: { type: \"string\" },\r",
+											"                description: { type: \"string\" },\r",
+											"                user_id: { type: \"number\" },\r",
+											"                created_at: { type: \"string\", format: \"date-time\" },\r",
+											"                updated_at: { type: \"string\", format: \"date-time\" }\r",
+											"            },\r",
+											"            required: [\"id\", \"title\", \"description\", \"user_id\", \"created_at\", \"updated_at\"],\r",
+											"            additionalProperties: false\r",
+											"        } }\r",
+											"    },\r",
+											"    required: [\"recipes\"],\r",
+											"    additionalProperties: false\r",
+											"}\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/recipes?user_id=2&ingredient_id=7",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "2"
+										},
+										{
+											"key": "ingredient_id",
+											"value": "7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Posting a recipe",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        message: { type: \"string\" },\r",
+											"        recipe: { \r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                title: { type: \"string\" },\r",
+											"                ingredients: { type: \"array\", items: { type: \"number\" } },\r",
+											"            },\r",
+											"            required: [\"id\", \"title\", \"ingredients\"],\r",
+											"            additionalProperties: false\r",
+											"        }\r",
+											"    },\r",
+											"    required: [\"message\", \"recipe\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Tortilla de papas\",\r\n    \"description\": \"Uno de los platos más emblemáticos de la cocina española.\",\r\n    \"ingredients\": [4,24,55,64,65]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting recipe 21",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        recipe: { \r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                title: { type: \"string\" },\r",
+											"                description: { type: \"string\" },\r",
+											"                created_at: { type: \"string\", format: \"date-time\" },\r",
+											"                updated_at: { type: \"string\", format: \"date-time\" },\r",
+											"                ingredients: { type: \"array\", items: {\r",
+											"                    type: \"object\",\r",
+											"                    properties: {\r",
+											"                        id: { type: \"number\" },\r",
+											"                        name: { type: \"string\" },\r",
+											"                        ingredient_type_id: { type: \"number\" }\r",
+											"                    },\r",
+											"                    required: [\"id\", \"name\", \"ingredient_type_id\"],\r",
+											"                    additionalProperties: false\r",
+											"                } }\r",
+											"            },\r",
+											"            required: [\"id\", \"title\", \"description\", \"created_at\", \"updated_at\", \"ingredients\"],\r",
+											"            additionalProperties: false\r",
+											"        }\r",
+											"    },\r",
+											"    required: [\"recipe\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/21",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"21"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating recipe 21",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        message: { type: \"string\" }\r",
+											"    },\r",
+											"    required: [\"message\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ingredients\": [4,22,24,55,64,65]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/21",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"21"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deleting recipe 21",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/recipes/21",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"21"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reposting recipe 21",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        message: { type: \"string\" },\r",
+											"        recipe: { \r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                title: { type: \"string\" },\r",
+											"                ingredients: { type: \"array\", items: { type: \"number\" } },\r",
+											"            },\r",
+											"            required: [\"id\", \"title\", \"ingredients\"],\r",
+											"            additionalProperties: false\r",
+											"        }\r",
+											"    },\r",
+											"    required: [\"message\", \"recipe\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Tortilla de papas\",\r\n    \"description\": \"Uno de los platos más emblemáticos de la cocina española.\",\r\n    \"ingredients\": [4,24,55,64,65]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Users/Profile",
+					"item": [
+						{
+							"name": "Getting user 4",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        user: {\r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                name: { type: \"string\" },\r",
+											"                bio: { type: \"string\" },\r",
+											"                recipes: { type: \"array\", items: {\r",
+											"                    type: \"object\",\r",
+											"                    properties: {\r",
+											"                        id: { type: \"number\" },\r",
+											"                        title: { type: \"string\" },\r",
+											"                        description: { type: \"string\" },\r",
+											"                        user_id: { type: \"number\" },\r",
+											"                        created_at: { type: \"string\", format: \"date-time\" },\r",
+											"                        updated_at: { type: \"string\", format: \"date-time\" }\r",
+											"                    },\r",
+											"                    required: [\"id\", \"title\", \"description\", \"user_id\", \"created_at\", \"updated_at\"],\r",
+											"                    additionalProperties: false\r",
+											"                } }\r",
+											"            },\r",
+											"            required: [\"id\", \"name\", \"bio\", \"recipes\"],\r",
+											"            additionalProperties: false\r",
+											"        }\r",
+											"    },\r",
+											"    required: [\"user\"],\r",
+											"    additionalProperties: false,\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/4",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating name, email and bio",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        message: { type: \"string\" }\r",
+											"    },\r",
+											"    required: [\"message\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Postman Test\",\r\n    \"email\": \"postmantest@example.com\",\r\n    \"bio\": \"Automático.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting my profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"  type: \"object\",\r",
+											"  properties: {\r",
+											"    profile: { \r",
+											"      type: \"object\",\r",
+											"      properties: {\r",
+											"        id: { type: \"number\" },\r",
+											"        name: { type: \"string\" },\r",
+											"        email: { type: \"string\" },\r",
+											"        bio: { type: [\"string\", \"null\"] },\r",
+											"        created_at: { type: \"string\", format: \"date-time\" },\r",
+											"        updated_at: { type: \"string\", format: \"date-time\" },\r",
+											"        recipes: { type: \"array\", items: { $ref: \"#/$defs/recipe\" } },\r",
+											"        favorites: { type: \"array\", items: { $ref: \"#/$defs/recipe\" } }\r",
+											"      },\r",
+											"      required: [\"id\", \"name\", \"email\", \"bio\", \"created_at\", \"updated_at\", \"recipes\", \"favorites\"],\r",
+											"      additionalProperties: false\r",
+											"    }\r",
+											"  },\r",
+											"  required: [\"profile\"],\r",
+											"  additionalProperties: false,\r",
+											"\r",
+											"  $defs: {\r",
+											"    recipe: {\r",
+											"      type: \"object\",\r",
+											"      properties: {\r",
+											"        id: { type: \"number\" },\r",
+											"        title: { type: \"string\" },\r",
+											"        description: { type: \"string\" },\r",
+											"        user_id: { type: \"number\" },\r",
+											"        created_at: { type: \"string\", format: \"date-time\" },\r",
+											"        updated_at: { type: \"string\", format: \"date-time\" }\r",
+											"      },\r",
+											"      required: [\"id\", \"title\", \"description\", \"user_id\", \"created_at\", \"updated_at\"],\r",
+											"      additionalProperties: false\r",
+											"    }\r",
+											"  }\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/my-profile",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"my-profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changing password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\": \"Hello1234!\",\r\n    \"new_password\": \"Hello1234?\",\r\n    \"new_password_confirmation\": \"Hello1234?\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16/password",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16",
+										"password"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Ingredient Types",
+					"item": [
+						{
+							"name": "Getting all types",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    \"type\": \"object\",\r",
+											"    \"properties\": {\r",
+											"        ingredient_types: { type: \"array\", items: {\r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                name: { type: \"string\" }\r",
+											"            },\r",
+											"            required: [\"id\", \"name\"],\r",
+											"            additionalProperties: false\r",
+											"        } }\r",
+											"    },\r",
+											"    required: [\"ingredient_types\"],\r",
+											"    additionalProperties: false\r",
+											"}\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/ingredient-types",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"ingredient-types"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting ingredient type 5",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        ingredient_type: {\r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                name: { type: \"string\" },\r",
+											"                ingredients: { type: \"array\", items: {\r",
+											"                    type: \"object\",\r",
+											"                    properties: {\r",
+											"                        id: { type: \"number\" },\r",
+											"                        name: { type: \"string\" },\r",
+											"                        ingredient_type_id: { type: \"number\" }\r",
+											"                    },\r",
+											"                    required: [\"id\", \"name\", \"ingredient_type_id\"],\r",
+											"                    additionalProperties: false\r",
+											"                } }\r",
+											"            },\r",
+											"            required: [\"id\", \"name\", \"ingredients\"],\r",
+											"            additionalProperties: false\r",
+											"        }\r",
+											"    },\r",
+											"    required: [\"ingredient_type\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/ingredient-types/5",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"ingredient-types",
+										"5"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Favorites",
+					"item": [
+						{
+							"name": "Adding to favorites",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        message: { type: \"string\" }\r",
+											"    },\r",
+											"    required: [\"message\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"recipe_id\": 12\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/favorites",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"favorites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting my favorites",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        favorites: { type: \"array\", items: {\r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"            id: { type: \"number\" },\r",
+											"            title: { type: \"string\" },\r",
+											"            creator_id: { type: \"number\" }\r",
+											"        },\r",
+											"    required: [\"id\", \"title\", \"creator_id\"],\r",
+											"    additionalProperties: false\r",
+											"        } }\r",
+											"    }\r",
+											"}\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/favorites",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"favorites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deleting favorite recipe",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/favorites/12",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"favorites",
+										"12"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Admin panel",
+					"item": [
+						{
+							"name": "Posting an ingredient",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"// Testeo propiedades de la respuesta\r",
+											"const Ajv = require(\"ajv\");\r",
+											"const ajv = new Ajv();\r",
+											"\r",
+											"const schema = {\r",
+											"    type: \"object\",\r",
+											"    properties: {\r",
+											"        message: { type: \"string\" },\r",
+											"        ingredient: {\r",
+											"            type: \"object\",\r",
+											"            properties: {\r",
+											"                id: { type: \"number\" },\r",
+											"                name: { type: \"string\" },\r",
+											"                ingredient_type_id: { type: \"number\" }\r",
+											"            },\r",
+											"            required: [\"id\", \"name\", \"ingredient_type_id\"],\r",
+											"            additionalProperties: false\r",
+											"        }\r",
+											"    },\r",
+											"    required: [\"message\", \"ingredient\"],\r",
+											"    additionalProperties: false\r",
+											"};\r",
+											"\r",
+											"const valid = ajv.validate(schema, jsonData);\r",
+											"\r",
+											"pm.test(\"Schema is valid\", function () {\r",
+											"    pm.expect(valid).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Choclo\",\r\n    \"ingredient_type_id\": 5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating an ingredient",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Almendra\",\r\n    \"ingredient_type_id\": 15\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients/74",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients",
+										"74"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deactivating user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{adminBaseUrl}}/users/ban/5",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"users",
+										"ban",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Promoting user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{adminBaseUrl}}/users/promote/6",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"users",
+										"promote",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{adminToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"const method = pm.request.method;\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Si es PATCH solo debo devolver un mensaje\r",
+									"if(method === \"PATCH\"){\r",
+									"    const Ajv = require(\"ajv\");\r",
+									"    const ajv = new Ajv();\r",
+									"\r",
+									"    const schema = {\r",
+									"        type: \"object\",\r",
+									"        properties: { message: { type: \"string\" } },\r",
+									"        required: [\"message\"],\r",
+									"        additionalProperties: false\r",
+									"    };\r",
+									"\r",
+									"    const valid = ajv.validate(schema, jsonData);\r",
+									"\r",
+									"    pm.test(\"Schema is valid\", function () {\r",
+									"        pm.expect(valid).to.be.true;\r",
+									"    });\r",
+									"}"
+								]
+							}
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							"/* Tests post-response comunes a todas las solicitudes felices */\r",
+							"const method = pm.request.method;\r",
+							"const path = pm.request.url.getPath();\r",
+							"\r",
+							"switch(method){\r",
+							"    case \"DELETE\":\r",
+							"        pm.test(\"Status code is 204\", function () {\r",
+							"            pm.response.to.have.status(204);\r",
+							"        });\r",
+							"        pm.test(\"Response has no body\", function () {\r",
+							"            pm.expect(pm.response.text()).to.be.empty;\r",
+							"        });\r",
+							"    break;\r",
+							"\r",
+							"    case \"POST\":\r",
+							"        // La única excepción es el log in\r",
+							"        if(path === \"/api/login\"){\r",
+							"            pm.test(\"Status code is 200\", function () {\r",
+							"                pm.response.to.have.status(200);\r",
+							"            });\r",
+							"        } else {\r",
+							"            pm.test(\"Status code is 201\", function () {\r",
+							"                pm.response.to.have.status(201);\r",
+							"            });\r",
+							"        }\r",
+							"        pm.test(\"Content-Type is JSON\", function () {\r",
+							"            pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+							"        });\r",
+							"    break;\r",
+							"\r",
+							"    default: // GET o PATCH\r",
+							"        // La única excepción es cambiar la contraseña\r",
+							"        if(method === \"PATCH\" && path.includes(\"/password\")){\r",
+							"            pm.test(\"Status code is 204\", function () {\r",
+							"                pm.response.to.have.status(204);\r",
+							"            });\r",
+							"            pm.test(\"Response has no body\", function () {\r",
+							"                pm.expect(pm.response.text()).to.be.empty;\r",
+							"            });\r",
+							"            break;\r",
+							"        }\r",
+							"        pm.test(\"Status code is 200\", function () {\r",
+							"            pm.response.to.have.status(200);\r",
+							"        });\r",
+							"        pm.test(\"Content-Type is JSON\", function () {\r",
+							"            pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+							"        });\r",
+							"    break;\r",
+							"}\r",
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Sad path",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Sign up - Very long name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{longName}}\",\r\n    \"email\": \"postman2@example.com\",\r\n    \"password\": \"{{password}}\",\r\n    \"password_confirmation\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sign-up",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sign up - Invalid email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Postman\",\r\n    \"email\": \"{{invalidEmail}}\",\r\n    \"password\": \"{{password}}\",\r\n    \"password_confirmation\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sign-up",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sign up - Already registered email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Postman gg\",\r\n    \"email\": \"{{adminEmail}}\",\r\n    \"password\": \"{{password}}\",\r\n    \"password_confirmation\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sign-up",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sign up - Insecure password 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Postman gg\",\r\n    \"email\": \"postmantest@example.com\",\r\n    \"password\": \"{{insecPass1}}\",\r\n    \"password_confirmation\": \"{{insecPass1}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sign-up",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sign up - Insecure password 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Postman gg\",\r\n    \"email\": \"postmantest@example.com\",\r\n    \"password\": \"{{insecPass2}}\",\r\n    \"password_confirmation\": \"{{insecPass2}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sign-up",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sign up - Insecure password 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Postman gg\",\r\n    \"email\": \"postmantest@example.com\",\r\n    \"password\": \"{{insecPass3}}\",\r\n    \"password_confirmation\": \"{{insecPass3}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sign-up",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sign up - Empty fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"\",\r\n    \"email\": \"\",\r\n    \"password\": \"\",\r\n    \"password_confirmation\": \"\"\r\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sign-up",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sign-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log out - No token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/logout",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log in - Invalid email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{invalidEmail}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log in - Unregistered email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"iLikePostman@example.com\",\r\n    \"password\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log in - Insecure password 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{insecPass1}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log in - Insecure password 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{insecPass2}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log in - Insecure password 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{insecPass3}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Log in - Deactivated user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{bannedEmail}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Ingredients",
+					"item": [
+						{
+							"name": "Non-existent ingredient",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/ingredients/95",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"ingredients",
+										"95"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Recipes",
+					"item": [
+						{
+							"name": "Posting a recipe - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Tortilla de papas\",\r\n    \"description\": \"Uno de los platos más emblemáticos de la cocina española.\",\r\n    \"ingredients\": [4,24,55,64,65]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Posting a recipe - Already registered title",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Pizza de mozzarella\",\r\n    \"description\": \"Fácil y rápida.\",\r\n    \"ingredients\": [1,2,3]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Posting a recipe - Very long title",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"{{longName}}\",\r\n    \"description\": \"Uno de los platos más emblemáticos de la cocina española.\",\r\n    \"ingredients\": [4,24,55,64,65]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Posting a recipe - Very long description",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Asado\",\r\n    \"description\": \"{{longDescription}}\",\r\n    \"ingredients\": [1]\r\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Posting a recipe - Non-existent ingredient",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Asado\",\r\n    \"description\": \"Asado.\",\r\n    \"ingredients\": [51,128]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Posting a recipe - Empty fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"\",\r\n    \"description\": \"\",\r\n    \"ingredients\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting recipes - Non-existent recipe",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/recipes/55",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"55"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting recipes - Non-existent ingredient",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/recipes?ingredient_id=88",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									],
+									"query": [
+										{
+											"key": "ingredient_id",
+											"value": "88"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting recipes - Non-existent user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/recipes?user_id=50",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes"
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "50"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating recipe - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Tortilla de papas\",\r\n    \"description\": \"Uno de los platos más emblemáticos de la cocina española.\",\r\n    \"ingredients\": [4,24,55,64,65]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/21",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"21"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating recipe - Forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Tortilla de papas\",\r\n    \"description\": \"Uno de los platos más emblemáticos de la cocina española.\",\r\n    \"ingredients\": [4,24,55,64,65]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/5",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating recipe - Non-existent recipe",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Tortilla de papas\",\r\n    \"description\": \"Uno de los platos más emblemáticos de la cocina española.\",\r\n    \"ingredients\": [4,24,55,64,65]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/57",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"57"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating recipe - Already registered title",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Pizza de mozzarella\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/22",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"22"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating recipe - Very long title",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"{{longName}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/22",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"22"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating recipe - Very long description",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"description\": \"{{longDescription}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/22",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"22"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating recipe - Non-existent ingredient",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ingredients\": [4,24,55,64,65,174]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/22",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"22"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating recipe - Empty fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"\",\r\n    \"description\": \"\",\r\n    \"ingredients\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/recipes/22",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"22"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deleting recipe - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/recipes/21",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"21"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deleting recipe - Forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/recipes/5",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deleting recipe - Non-existent recipe",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/recipes/87",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"recipes",
+										"87"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Users/Profile",
+					"item": [
+						{
+							"name": "Updating profile - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"bio\": \"Automático.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating profile - Forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Impostor\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/5",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating profile - Very long name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{longName}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating profile - Very long  bio",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"bio\": \"{{longDescription}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating profile - Invalid email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{invalidEmail}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating profile - Already registered email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{adminEmail}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating profile - Empty fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"\",\r\n    \"email\": \"\",\r\n    \"bio\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting my profile - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/my-profile",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"my-profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changing password - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\": \"{{password}}\",\r\n    \"new_password\": \"Hello1234?\",\r\n    \"new_password_confirmation\": \"Hello1234?\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16/password",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16",
+										"password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changing password - Forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\": \"{{password}}\",\r\n    \"new_password\": \"Hello1234?\",\r\n    \"new_password_confirmation\": \"Hello1234?\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/5/password",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"5",
+										"password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changing password - Incorrect current password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\": \"Hello12345!\",\r\n    \"new_password\": \"Hello1234?\",\r\n    \"new_password_confirmation\": \"Hello1234?\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16/password",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16",
+										"password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changing password - No new password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\": \"Hello1234!\",\r\n    \"new_password_confirmation\": \"Hello1234?\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16/password",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16",
+										"password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changing password - No password confirmation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\": \"Hello1234!\",\r\n    \"new_password\": \"Hello1234?\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16/password",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16",
+										"password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changing password - Insecure new password 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\": \"{{password}}\",\r\n    \"new_password\": \"{{insecPass1}}\",\r\n    \"new_password_confirmation\": \"{{insecPass1}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16/password",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16",
+										"password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changing password - Insecure new password 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\": \"{{password}}\",\r\n    \"new_password\": \"{{insecPass2}}\",\r\n    \"new_password_confirmation\": \"{{insecPass2}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16/password",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16",
+										"password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Changing password - Insecure new password 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"current_password\": \"{{password}}\",\r\n    \"new_password\": \"{{insecPass3}}\",\r\n    \"new_password_confirmation\": \"{{insecPass3}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users/16/password",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"16",
+										"password"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Ingredient Types",
+					"item": [
+						{
+							"name": "Getting non-existent ingredient type",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/ingredient-types/57",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"ingredient-types",
+										"57"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Favorites",
+					"item": [
+						{
+							"name": "Adding to favorites - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"recipe_id\": 12\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/favorites",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"favorites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding to favorites - Non-existent recipe",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"recipe_id\": 39\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/favorites",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"favorites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Adding to favorites - Already added",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 409\", function () {\r",
+											"    pm.response.to.have.status(409);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"recipe_id\": 4\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/favorites",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"favorites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Getting my favorites - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/favorites",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"favorites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deleting favorite - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/favorites/12",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"favorites",
+										"12"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deleting favorite - Not favorite recipe",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/favorites/5",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"favorites",
+										"5"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Admin panel",
+					"item": [
+						{
+							"name": "Posting an ingredient - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Choclo\",\r\n    \"ingredient_type_id\": 5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Posting an ingredient - Forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Choclo\",\r\n    \"ingredient_type_id\": 5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Posting an ingredient - Already registered name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Manteca\",\r\n    \"ingredient_type_id\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Posting an ingredient - Non-existent type",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Choclo\",\r\n    \"ingredient_type_id\": 27\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating an ingredient - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Maíz\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients/74",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients",
+										"74"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating an ingredient - Forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Maíz\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients/74",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients",
+										"74"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating an ingredient - Non-existent ingredient",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Maíz\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients/87",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients",
+										"87"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating an ingredient - Already registered name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Canela\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients/74",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients",
+										"74"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating an ingredient - Non-existent type",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Maíz\",\r\n    \"ingredient_type_id\": 27\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients/74",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients",
+										"74"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Updating an ingredient - Empty fields",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{adminBaseUrl}}/ingredients/74",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"ingredients",
+										"74"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deactivating user - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{adminBaseUrl}}/users/ban/5",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"users",
+										"ban",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deactivating user - Forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{adminBaseUrl}}/users/ban/5",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"users",
+										"ban",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deactivating user - Non-existent user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{adminBaseUrl}}/users/ban/51",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"users",
+										"ban",
+										"51"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Promoting user - Unauthenticated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{adminBaseUrl}}/users/promote/6",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"users",
+										"promote",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Promoting user - Forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{adminBaseUrl}}/users/promote/6",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"users",
+										"promote",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Promoting user - Non-existent user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{adminBaseUrl}}/users/promote/65",
+									"host": [
+										"{{adminBaseUrl}}"
+									],
+									"path": [
+										"users",
+										"promote",
+										"65"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{adminToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					"/* Configuro headers para las solicitudes */\r",
+					"\r",
+					"const method = pm.request.method;\r",
+					"const token = pm.collectionVariables.get(\"token\");\r",
+					"const path = pm.request.url.getPath();\r",
+					"// GETs que necesitan auth\r",
+					"const getsAuth = [\"/my-profile\", \"/favorites\"];\r",
+					"\r",
+					"// Todas las respuestas serán en JSON\r",
+					"pm.request.headers.upsert({\r",
+					"    key: \"Accept\",\r",
+					"    value: \"application/json\"\r",
+					"});\r",
+					"\r",
+					"// En todos los POST y PATCH, el contenido enviado es JSON\r",
+					"if([\"POST\", \"PATCH\"].includes(method)){\r",
+					"    pm.request.headers.upsert({\r",
+					"        key: \"Content-Type\",\r",
+					"        value: \"application/json\"\r",
+					"    });\r",
+					"}\r",
+					"\r",
+					"// Los endpoints que requieren auth tienen el header correspondiente\r",
+					"if(token && \r",
+					"    ([\"POST\", \"PATCH\", \"DELETE\"].includes(method)\r",
+					"    || \r",
+					"    (method === \"GET\" && getsAuth.some(g => path.includes(g))))\r",
+					"    ){\r",
+					"    pm.request.headers.upsert({\r",
+					"        key: \"Authorization\",\r",
+					"        value: \"Bearer \" + token\r",
+					"    });\r",
+					"}\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					"\r",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
